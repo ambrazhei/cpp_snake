@@ -250,7 +250,7 @@ int main()
 	Game game = Game();
 	Textures textures = Textures("../assets/empty.png", "../assets/snake.png", "../assets/apple.png");
 
-	int direction = game.snakeDirection;
+	int direction;
 
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	sf::RenderWindow window(sf::VideoMode(FieldParams::WINDOW_WIDTH, FieldParams::WINDOW_HEIGHT), "Snake", sf::Style::Close);
