@@ -28,6 +28,29 @@ struct FieldParams
 	static const int WINDOW_HEIGHT = FIELD_SIZE_Y * CELL_SIZE;
 };
 
+struct Textures
+{
+	sf::Texture emptyTexture;
+	sf::Sprite empty;
+
+	sf::Texture snakeTexture;
+	sf::Sprite snake;
+
+	sf::Texture fruitTexture;
+	sf::Sprite fruit;
+
+	Textures(std::string emptyPath, std::string snakePath, std::string fruitPath) {
+		emptyTexture.loadFromFile(emptyPath);
+		empty.setTexture(emptyTexture);
+
+		snakeTexture.loadFromFile(snakePath);
+		snake.setTexture(snakeTexture);
+
+		fruitTexture.loadFromFile(fruitPath);
+		fruit.setTexture(fruitTexture);
+	}
+};
+
 int field[FieldParams::FIELD_SIZE_Y][FieldParams::FIELD_SIZE_X];
 
 int snakePosX = FieldParams::FIELD_SIZE_X / 2;
@@ -36,115 +59,111 @@ int snakeLength = 4;
 int snakeDirection = Direction::RIGHT;
 bool isGameOver = false;
 
+struct Game {
+	int field[FieldParams::FIELD_SIZE_Y][FieldParams::FIELD_SIZE_X];
 
-int getRandomEmptyCell() {
-	int counter = 0;
+	int snakePosX = FieldParams::FIELD_SIZE_X / 2;
+	int snakePosY = FieldParams::FIELD_SIZE_Y / 2;
+	int snakeLength = 4;
+	int snakeDirection = Direction::RIGHT;
+	bool isGameOver = false;
 
-	for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1)
-	{
-		for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1)
+	int getRandomEmptyCell() {
+		int counter = 0;
+
+		for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1)
 		{
-			if (field[y][x] == FieldType::EMPTY_CELL_TYPE) {
-				counter += 1;
-			}
-		}
-	}
-
-	int targetIndex = rand() % counter;
-	int emptyCellIndex = 0;
-
-	for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1) {
-		for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1) {
-			if (field[y][x] == FieldType::EMPTY_CELL_TYPE) {
-				if (emptyCellIndex == targetIndex) {
-					return y * FieldParams::FIELD_SIZE_X + x;
+			for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1)
+			{
+				if (field[y][x] == FieldType::EMPTY_CELL_TYPE) {
+					counter += 1;
 				}
-				emptyCellIndex += 1;
 			}
 		}
-	}
-	return FieldType::FRUIT_CELL_TYPE;
-}
 
-void renderFruit()
-{
-	int fruitPos = getRandomEmptyCell();
+		int targetIndex = rand() % counter;
+		int emptyCellIndex = 0;
 
-	if (fruitPos != -1) {
-		fruitPos = getRandomEmptyCell();
-	}
-
-	field[fruitPos / FieldParams::FIELD_SIZE_X][fruitPos % FieldParams::FIELD_SIZE_X] = FieldType::FRUIT_CELL_TYPE;
-}
-
-void prepareField()
-{
-	for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1)
-	{
-		for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1)
-		{
-			field[y][x] = FieldType::EMPTY_CELL_TYPE;
+		for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1) {
+			for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1) {
+				if (field[y][x] == FieldType::EMPTY_CELL_TYPE) {
+					if (emptyCellIndex == targetIndex) {
+						return y * FieldParams::FIELD_SIZE_X + x;
+					}
+					emptyCellIndex += 1;
+				}
+			}
 		}
+		return FieldType::FRUIT_CELL_TYPE;
 	}
 
-	for (int i = 0; i < snakeLength; i++)
+	void renderFruit()
 	{
-		field[snakePosY][snakePosX - 1] = snakeLength - i;
+		int fruitPos = getRandomEmptyCell();
+
+		if (fruitPos != -1) {
+			fruitPos = getRandomEmptyCell();
+		}
+
+		field[fruitPos / FieldParams::FIELD_SIZE_X][fruitPos % FieldParams::FIELD_SIZE_X] = FieldType::FRUIT_CELL_TYPE;
 	}
 
-	renderFruit();
-}
+	void prepareField()
+	{
+		for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1)
+		{
+			for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1)
+			{
+				field[y][x] = FieldType::EMPTY_CELL_TYPE;
+			}
+		}
 
-void render(sf::RenderWindow &window)
-{
-	sf::Texture emptyTexture;
-	emptyTexture.loadFromFile("../assets/empty.png");
-	sf::Sprite empty;
-	empty.setTexture(emptyTexture);
+		for (int i = 0; i < snakeLength; i++)
+		{
+			field[snakePosY][snakePosX - 1] = snakeLength - i;
+		}
 
-	sf::Texture snakeTexture;
-	snakeTexture.loadFromFile("../assets/snake.png");
-	sf::Sprite snake;
-	snake.setTexture(snakeTexture);
+		renderFruit();
+	}
 
-	sf::Texture fruitTexture;
-	fruitTexture.loadFromFile("../assets/apple.png");
-	sf::Sprite fruit;
-	fruit.setTexture(fruitTexture);
 
-	for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y++) {
-		for (int x = 0; x < FieldParams::FIELD_SIZE_X; x++) {
-			switch (field[y][x]) {
+	void render(sf::RenderWindow& window, Textures& textures)
+	{
+		for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y++) {
+			for (int x = 0; x < FieldParams::FIELD_SIZE_X; x++) {
+				switch (field[y][x]) {
 				case FieldType::EMPTY_CELL_TYPE:
-					empty.setPosition(float(x * FieldParams::CELL_SIZE), float(y * (FieldParams::CELL_SIZE)));
-					window.draw(empty);
+					textures.empty.setPosition(float(x * FieldParams::CELL_SIZE), float(y * (FieldParams::CELL_SIZE)));
+					window.draw(textures.empty);
 					break;
 				case FieldType::FRUIT_CELL_TYPE:
-					fruit.setPosition(float(x * FieldParams::CELL_SIZE), float(y * (FieldParams::CELL_SIZE)));
-					window.draw(fruit);
+					textures.fruit.setPosition(float(x * FieldParams::CELL_SIZE), float(y * (FieldParams::CELL_SIZE)));
+					window.draw(textures.fruit);
 					break;
 				default:
-					snake.setPosition(float(x * FieldParams::CELL_SIZE), float(y * FieldParams::CELL_SIZE));
-					window.draw(snake);
+					textures.snake.setPosition(float(x * FieldParams::CELL_SIZE), float(y * FieldParams::CELL_SIZE));
+					window.draw(textures.snake);
+				}
 			}
 		}
 	}
-}
 
-void growSnake() {
-	for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1)	{
-		for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1)	{
-			if (field[y][x] > FieldType::EMPTY_CELL_TYPE) {
-				field[y][x] += 1;
+	void growSnake() {
+		for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1) {
+			for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1) {
+				if (field[y][x] > FieldType::EMPTY_CELL_TYPE) {
+					field[y][x] += 1;
+				}
 			}
 		}
 	}
-}
 
-void move()
-{
-	switch (snakeDirection)	
+
+
+	void move()
 	{
+		switch (snakeDirection)
+		{
 		case Direction::UP:
 			snakePosY -= 1;
 			if (snakePosY < 0) {
@@ -170,10 +189,10 @@ void move()
 			}
 			break;
 
-	}
+		}
 
-	if (field[snakePosY][snakePosX] != FieldType::EMPTY_CELL_TYPE) {
-		switch (field[snakePosY][snakePosX]) {
+		if (field[snakePosY][snakePosX] != FieldType::EMPTY_CELL_TYPE) {
+			switch (field[snakePosY][snakePosX]) {
 			case FieldType::FRUIT_CELL_TYPE:
 				snakeLength += 1;
 				growSnake();
@@ -181,58 +200,65 @@ void move()
 				break;
 			default:
 				isGameOver = true;
+			}
 		}
-	}
 
-	field[snakePosY][snakePosX] = snakeLength + 1;
+		field[snakePosY][snakePosX] = snakeLength + 1;
 
-	for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1)
-	{
-		for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1)
+		for (int y = 0; y < FieldParams::FIELD_SIZE_Y; y += 1)
 		{
-			if (field[y][x] > FieldType::EMPTY_CELL_TYPE) {
-				field[y][x] -= 1;
+			for (int x = 0; x < FieldParams::FIELD_SIZE_X; x += 1)
+			{
+				if (field[y][x] > FieldType::EMPTY_CELL_TYPE) {
+					field[y][x] -= 1;
+				}
 			}
 		}
 	}
-}
 
+	void handleKeyPress()
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+			if (snakeDirection != Direction::DOWN) {
+				snakeDirection = Direction::UP;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+			if (snakeDirection != Direction::RIGHT) {
+				snakeDirection = Direction::LEFT;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+			if (snakeDirection != Direction::UP) {
+				snakeDirection = Direction::DOWN;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+			if (snakeDirection != Direction::LEFT) {
+				snakeDirection = Direction::RIGHT;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+			isGameOver = true;
+		}
+	}
+};
 
-void handleKeyPress() 
-{
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-		if (snakeDirection != Direction::DOWN) {
-			snakeDirection = Direction::UP;
-		}
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-		if (snakeDirection != Direction::RIGHT) {
-			snakeDirection = Direction::LEFT;
-		}
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-		if (snakeDirection != Direction::UP) {
-			snakeDirection = Direction::DOWN;
-		}
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-		if (snakeDirection != Direction::LEFT) {
-			snakeDirection = Direction::RIGHT;
-		}
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-		isGameOver = true;
-	}
+void init() {
+
 }
 
 int main()
 {
+	Game game = Game();
+	Textures textures = Textures("../assets/empty.png", "../assets/snake.png", "../assets/apple.png");
+
 	srand(time(NULL));
 
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	sf::RenderWindow window(sf::VideoMode(FieldParams::WINDOW_WIDTH, FieldParams::WINDOW_HEIGHT), "Snake", sf::Style::Close);
 
-	prepareField();
+	game.prepareField();
 
 	while (window.isOpen()) 
 	{
@@ -245,16 +271,16 @@ int main()
 			}
 		}
 
-		move();
+		game.move();
 
 		if (isGameOver) {
 			window.close();
 		}
 
 		window.clear(sf::Color(103, 212, 168));
-		handleKeyPress();
+		game.handleKeyPress();
 
-		render(window);
+		game.render(window, textures);
 		window.display();
 
 		sf::sleep(sf::milliseconds(150));
