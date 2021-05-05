@@ -18,15 +18,15 @@
     <ClCompile Include="Snake.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FieldParams.cpp">
+    <ClCompile Include="Components\Textures\Textures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header.h">
+    <ClInclude Include="Components\Textures\Textures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FieldParams\FieldParams.h">
+    <ClInclude Include="Components\FieldParams\FieldParams.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

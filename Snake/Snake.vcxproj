@@ -149,12 +149,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FieldParams.cpp" />
+    <ClCompile Include="Components\Textures\Textures.cpp" />
     <ClCompile Include="Snake.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FieldParams\FieldParams.h" />
-    <ClInclude Include="Header.h" />
+    <ClInclude Include="Components\FieldParams\FieldParams.h" />
+    <ClInclude Include="Components\Textures\Textures.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
