@@ -5,6 +5,7 @@
 
 #include "Components/Textures/Textures.h"
 #include "Components/FieldParams/FieldParams.h"
+#include "Components/HandleKeyPress/HandleKeyPress.h"
 
 using namespace FieldParams;
 
@@ -14,7 +15,7 @@ struct Game {
 	int snakePosX = FIELD_SIZE_X / 2;
 	int snakePosY = FIELD_SIZE_Y / 2;
 	int snakeLength = 4;
-	int snakeDirection = static_cast<int>(Direction::RIGHT);
+	Direction snakeDirection = Direction::RIGHT;
 	bool isGameOver = false;
 
 	void iterateOverField(std::function<void(int, int)> cb) {
@@ -172,36 +173,6 @@ struct Game {
 			}
 		});
 	}
-
-	int handleKeyPress(sf::Event& event) {
-		int tempDirection = snakeDirection;
-		switch (event.key.code) {
-		case sf::Keyboard::Up:
-			if (snakeDirection != Direction::DOWN) {
-				tempDirection = Direction::UP;
-			}
-			break;
-		case sf::Keyboard::Down:
-			if (snakeDirection != Direction::UP) {
-				tempDirection = Direction::DOWN;
-			}
-			break;
-		case sf::Keyboard::Left:
-			if (snakeDirection != Direction::RIGHT) {
-				tempDirection = Direction::LEFT;
-			}
-			break;
-		case sf::Keyboard::Right:
-			if (snakeDirection != Direction::LEFT) {
-				tempDirection = Direction::RIGHT;
-			}
-			break;
-		case sf::Keyboard::Escape:
-			isGameOver = true;
-			break;
-		}
-		return tempDirection;
-	}
 };
 
 int main()
@@ -211,7 +182,7 @@ int main()
 	auto game = Game();
 	auto textures = Textures("../assets/empty.png", "../assets/snake.png", "../assets/apple.png");
 
-	int direction = game.snakeDirection;
+	Direction direction = game.snakeDirection;
 
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Snake", sf::Style::Close);
@@ -228,7 +199,7 @@ int main()
 				window.close();
 			}
 			if (event.type == sf::Event::KeyPressed) {
-				direction = game.handleKeyPress(event);
+				direction = HandleKeyPress::handleKeyboardEvent(event, game.snakeDirection, game.isGameOver);
 			}
 		}
 		game.snakeDirection = direction;
@@ -240,8 +211,8 @@ int main()
 		}
 
 		window.clear(sf::Color(103, 212, 168));
-
 		game.render(window, textures);
+
 		window.display();
 
 		sf::sleep(sf::milliseconds(100));

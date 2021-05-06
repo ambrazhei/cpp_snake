@@ -149,11 +149,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Components\Game\Game.cpp" />
+    <ClCompile Include="Components\HandleKeyPress\HandleKeyPress.cpp" />
     <ClCompile Include="Components\Textures\Textures.cpp" />
     <ClCompile Include="Snake.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components\FieldParams\FieldParams.h" />
+    <ClInclude Include="Components\Game\Game.h" />
+    <ClInclude Include="Components\HandleKeyPress\HandleKeyPress.h" />
     <ClInclude Include="Components\Textures\Textures.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

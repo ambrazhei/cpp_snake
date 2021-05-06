@@ -2,7 +2,7 @@
 
 namespace FieldParams
 {
-	enum Direction
+	enum class Direction
 	{
 		UP = 0,
 		RIGHT = 1,
