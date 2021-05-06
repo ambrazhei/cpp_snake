@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Textures.h"
 
 #include <SFML/Graphics.hpp>

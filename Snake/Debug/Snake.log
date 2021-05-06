@@ -1,2 +1,5 @@
 ﻿  Game.cpp
+  Snake.cpp
+D:\cpp\Snake\Snake\Snake.cpp(15,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Generating Code...
   Snake.vcxproj -> D:\cpp\Snake\Debug\Snake.exe
